@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta name="theme-color" content="#6c4cf1"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Times Table Quest</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eaf4ff;--bg2:#fff0fa;--card:#fff;--ink:#27234d;--pri:#6c4cf1;--pk:#ff6b9d;--ok:#1fb67c;--bad:#ef4b5a;--mut:#7a7aa0;--line:#e6e4f5;--sh:0 8px 24px rgba(108,76,241,.14);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15122e;--bg2:#1d1840;--card:#251f4f;--ink:#f3f0ff;--pri:#8e75ff;--mut:#a9a4d6;--line:#352e69;--sh:0 8px 24px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#15122e;--bg2:#1d1840;--card:#251f4f;--ink:#f3f0ff;--pri:#8e75ff;--mut:#a9a4d6;--line:#352e69;--sh:0 8px 24px rgba(0,0,0,.35)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:linear-gradient(160deg,var(--bg),var(--bg2));background-attachment:fixed;color:var(--ink);font-family:"Baloo 2",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;min-height:100vh}
+main{max-width:520px;margin:0 auto;padding:12px 14px 100px}
+h1{font-size:26px;margin:4px 0;line-height:1.1}h2{font-size:18px;margin:14px 0 6px}
+.top{display:flex;align-items:center;justify-content:space-between}
+.me{display:flex;align-items:center;gap:8px;background:var(--card);padding:4px 14px 4px 6px;border-radius:30px;box-shadow:var(--sh);cursor:pointer;font-weight:800}
+.me span{font-size:26px}
+.bell{position:relative;font-size:20px;padding:8px 12px;border-radius:50%}
+.bell b{position:absolute;top:-2px;right:-2px;background:var(--pk);color:#fff;font-size:12px;border-radius:10px;padding:0 6px}
+input{font:inherit;padding:10px 12px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);width:100%;box-sizing:border-box}
+button{font:inherit;font-weight:700;border:0;border-radius:16px;padding:10px 14px;background:var(--card);color:var(--ink);box-shadow:0 4px 0 rgba(60,40,140,.16);cursor:pointer}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(60,40,140,.16)}
+button.p{background:linear-gradient(135deg,var(--pri),#9a6bff);color:#fff}
+button:disabled{opacity:.4}
+.big2{width:100%;font-size:19px;padding:14px;margin:10px 0}
+.card{background:var(--card);border-radius:24px;padding:16px;margin:12px 0;box-shadow:var(--sh)}
+.hero{background:linear-gradient(135deg,var(--pri),var(--pk));color:#fff;border-radius:28px;padding:20px;text-align:center;box-shadow:var(--sh);margin-top:8px}
+.prog{height:12px;background:rgba(255,255,255,.35);border-radius:8px;margin:12px 0 6px;overflow:hidden}.prog i{display:block;height:100%;background:#ffd84d;border-radius:8px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{font-size:18px;padding:22px 0;color:#fff}.tile.a{background:#4dabf7}.tile.b{background:#2fcf9a}.tile.c{background:#ffb02e}.tile.d{background:#b36bff}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.t{font-size:20px;padding:14px 0}
+.c1{background:#ff5d6c;color:#fff}.c2{background:#ffc83d;color:#3a2f00}.c3{background:#2fcf9a;color:#fff}.c4{background:#c3c8d9;color:#222}.c5{background:#4dabf7;color:#fff}.c6{background:#b36bff;color:#fff}
+.sel{outline:4px solid var(--ink)}
+.lv{padding:10px 0;font-size:14px}.lv small{display:block;color:var(--mut);font-weight:500}
+.lv.done{background:var(--ok);color:#fff}.lv.done small{color:#fff}
+.chips{display:flex;justify-content:space-between}
+.chip{background:#2b2b45;color:#fff;font-weight:800;padding:4px 16px;border-radius:12px;min-width:44px;text-align:center}
+.chalk{background:#1f7a46;border:7px solid #d18a30;border-radius:14px;color:#fff;font-size:44px;font-weight:800;text-align:center;padding:30px 6px;margin:12px 0}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:10px}.bar i{display:block;height:100%;background:var(--pk);width:100%}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{background:#2b2b45;color:#fff;font-size:26px;padding:18px 0}.opt.ok{background:var(--ok)}.opt.no{background:var(--bad)}
+.ans{font-size:34px;text-align:center;min-height:48px;border-bottom:3px solid var(--pri);margin:0 40px 10px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.pad button{font-size:24px;padding:12px 0}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);gap:6px}
+.rv{display:grid;grid-template-columns:1.4fr 1fr 1fr;padding:8px;border-radius:10px;margin:4px 0;font-weight:700;text-align:center}
+.rv span:first-child{text-align:left}.rv.h{font-size:13px;color:var(--mut)}
+.rv.g{background:rgba(31,182,124,.16)}.rv.g span:last-child{color:var(--ok)}
+.rv.r{background:rgba(239,75,90,.16)}.rv.r span:nth-child(2){color:var(--bad)}.rv.r span:last-child{color:var(--ok)}
+.mut{color:var(--mut);font-size:14px}.c{text-align:center}.good{color:var(--ok)}.bad{color:var(--bad)}
+.big{font-size:21px;font-weight:800;text-align:center}
+select{font:inherit;padding:8px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.stats div{background:var(--bg);border-radius:16px;padding:10px 0;font-weight:800;font-size:22px}.stats small{display:block;font-size:12px;color:var(--mut);font-weight:500}
+.badge{display:flex;align-items:center;gap:10px;padding:6px 0}.badge span{font-size:28px}.badge.off{opacity:.35;filter:grayscale(1)}
+.avs{display:flex;flex-wrap:wrap;gap:8px}.avs button{font-size:26px;padding:6px 10px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:4px;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));background:var(--card);box-shadow:0 -6px 20px rgba(108,76,241,.12);z-index:5}
+nav button{flex:1;max-width:96px;box-shadow:none;background:none;font-size:12px;padding:6px 0;line-height:1.2}nav button span{display:block;font-size:22px}nav button.on{background:var(--bg);color:var(--pri)}
+#modal{position:fixed;inset:0;background:rgba(20,10,60,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
+#modal.show{display:flex}#modal>div{background:var(--card);border-radius:28px;padding:22px;max-width:380px;width:100%;box-shadow:var(--sh)}
+#cele{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:30;background:rgba(20,10,60,.35)}
+#cele.show{display:flex}.pop{background:var(--card);border-radius:30px;padding:24px 34px;text-align:center;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+#cf{position:fixed;inset:0;pointer-events:none;z-index:40}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:20px;display:none;z-index:50;font-weight:700}
+.shake{animation:s .25s}@keyframes s{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+html{-webkit-text-size-adjust:100%}
+body{min-height:100vh;min-height:100dvh;-webkit-tap-highlight-color:transparent}
+button{touch-action:manipulation;-webkit-user-select:none;user-select:none;min-height:44px}
+main{max-width:560px}
+.grid{grid-template-columns:repeat(5,1fr)}
+.opt:disabled{opacity:.45}.badge.off{opacity:.6}.badge{align-items:flex-start}
+.seg{display:flex;gap:6px;flex-wrap:wrap}.seg button{flex:1;min-width:58px;padding:10px 6px}
+.seg button.on{background:linear-gradient(135deg,var(--pri),#9a6bff);color:#fff}
+.dim{opacity:.4}.lbl{font-weight:800;margin:16px 0 6px}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.quick button{padding:8px 12px;font-size:14px;min-height:36px}
+.pb{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin:5px 0 2px}.pb i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),var(--pk));border-radius:6px}
+.sh{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sh a,.sh button{display:block;text-align:center;text-decoration:none;font-weight:700;border-radius:16px;padding:12px 6px;background:var(--bg);color:var(--ink);box-shadow:0 4px 0 rgba(60,40,140,.16)}
+.sh .wa{background:#25d366;color:#fff}.sh .tg{background:#2aabee;color:#fff}
+.sum{background:var(--bg);border-radius:14px;padding:10px;text-align:center;font-weight:800;margin-top:14px}
+@media(min-width:720px){main{max-width:780px;padding-top:20px}.grid{grid-template-columns:repeat(10,1fr)}.opts{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}.chalk{font-size:58px;padding:40px 6px}.two{grid-template-columns:repeat(4,1fr)}h1{font-size:32px}nav button{max-width:130px}}
+@media(max-width:360px){.chalk{font-size:36px}.opt{font-size:22px}.t{font-size:17px}nav button{font-size:11px}}
+@media(max-height:500px) and (orientation:landscape){.chalk{font-size:30px;padding:10px 6px;margin:8px 0}.opt{padding:10px 0;font-size:22px}.hero{padding:12px}nav button span{font-size:18px}}
+
+:root[data-skin=ocean]{--pri:#2d8cff;--pk:#00c2c7}:root[data-skin=sunset]{--pri:#ff7a45;--pk:#ff3d81}:root[data-skin=forest]{--pri:#2bb673;--pk:#c6a700}:root[data-skin=galaxy]{--pri:#a66bff;--pk:#ff4fd8}
+.coin{background:var(--card);padding:6px 12px;border-radius:20px;font-weight:800;box-shadow:0 3px 10px rgba(60,40,140,.12);cursor:pointer;margin-left:auto;margin-right:8px;white-space:nowrap}
+.ft{text-align:center;color:var(--mut);font-size:14px;margin:20px 0 0}.ft a{color:var(--pri);font-weight:800;text-decoration:none}
+.skip,.fgs{display:flex;flex-wrap:wrap;gap:6px}.fgs{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}.fgs button{padding:10px 0;min-height:44px;font-size:14px}
+.shopb small{display:block;font-size:11px}
+.wk{display:flex;gap:6px;align-items:flex-end;height:130px}.wk div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px}.wk small{font-size:11px;color:var(--mut)}.wk i{width:70%;background:var(--pri);border-radius:6px 6px 0 0}
+.cert{background:#fffdf3;color:#3a2f00;border:10px double #d4a017;border-radius:14px;padding:6px;margin:12px 0}.cin{border:2px solid #d4a017;padding:22px 12px;text-align:center}.ct{font-size:28px;font-weight:800;color:#a8780a;margin:6px 0}.cn{font-size:38px;font-weight:800;border-bottom:2px solid #d4a017;display:inline-block;padding:0 24px;margin:6px 0;word-break:break-word}.cd{display:flex;justify-content:space-around;margin-top:24px;font-weight:800}.cd small{display:block;font-weight:500;color:#7a6a30;border-top:1px solid #d4a017;margin-top:4px;padding-top:2px}.cert .mut{color:#7a6a30}.cert .big{color:#3a2f00}
+@media print{body{background:#fff!important}nav,.top,#modal,.noprint,.ft,#toast{display:none!important}main{max-width:none;padding:0}.card{box-shadow:none!important;border:1px solid #ccc}}
+</style></head><body>
+<main><div class="top"><div class="me" onclick="go('profile')"><span id="hav"></span><b id="hn"></b></div><div class="coin" id="cn" onclick="go('profile')"></div><button class="bell" onclick="go('notes')">🔔<b id="bd"></b></button></div><div id="v"></div><footer class="ft">Developed by: <a href="https://www.facebook.com/mr.somrat2020" target="_blank" rel="noopener">Md Mizanur Rahman</a></footer></main>
+<nav id="nav"></nav><div id="modal"></div><div id="cele" onclick="this.className=''"></div><canvas id="cf"></canvas><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const AV=['🦊','🐼','🦁','🐯','🐸','🦄','🐙','🚀'];
+const ACH={first:['🎯','First level cleared'],perfect:['🌟','Perfect score (3 stars)'],speed:['⚡','Speed run under 10s'],win:['🏆','Challenge winner'],s2:['🚀','Reached Stage 2'],p25:['📈','25% of levels completed'],p50:['🌗','50% of levels completed'],p75:['🔥','75% of levels completed'],p100:['👑','All levels completed'],st2:['🥈','Stage 2 completed'],st3:['🥇','Stage 3 completed'],pr:['✏️','10 practice sessions'],str:['📅','3-day streak'],dc:['📆','First daily challenge'],dc7:['🗓️','7 daily challenges']};
+let S={name:'',av:'🦊',unlocked:0,stars:{},ach:{},notes:[],unread:0,wins:0,coins:0,own:{},skin:'',uid:'',hist:{},sr:{},seen:{},cd:{},dc:0,daily:null,pr:0,streak:0,last:'',weak:{},snd:true,theme:'',prac:null,board:[{name:'Ava',t:4,time:9.8},{name:'Zayan',t:4,time:7.4},{name:'Mira',t:7,time:14.2},{name:'Rafi',t:12,time:21.5}]};
+try{const x=localStorage.getItem('ttq');if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
+const save=()=>{try{localStorage.setItem('ttq',JSON.stringify(S))}catch(e){}};
+const me=()=>S.name.trim()||'Player';
+const code=()=>me().replace(/[^A-Za-z0-9]/g,'').slice(0,12)||'Friend';
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const rnd=(a,b)=>a+(Math.random()*(b-a+1)|0);
+const pick=a=>a[rnd(0,a.length-1)];
+let toastT,celeT;
+const P=Object.assign({tables:[4],time:true,sec:5,count:10,kinds:['val','miss','pick'],order:'shuf',weak:false,smart:false},S.prac||{});S.prac=P;
+if(!S.uid){S.uid=Math.random().toString(36).slice(2,10)+Date.now().toString(36);save()}
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>t.style.display='none',2200)}
+function modal(h){$('#modal').innerHTML='<div>'+h+'</div>';$('#modal').className='show'}
+function closeModal(){$('#modal').className=''}
+function confetti(){const cv=$('#cf'),x=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;
+  const P=Array.from({length:110},()=>({x:innerWidth/2,y:innerHeight*.4,vx:(Math.random()-.5)*14,vy:-Math.random()*13-3,c:pick(['#ff6b9d','#ffc83d','#2fcf9a','#6c4cf1','#4dabf7']),s:rnd(6,11),r:Math.random()*6}));let f=0;
+  (function d(){x.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.r+=.2;x.fillStyle=p.c;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore()});if(++f<130)requestAnimationFrame(d);else x.clearRect(0,0,cv.width,cv.height)})()}
+function celebrate(e,title,sub){confetti();const c=$('#cele');c.innerHTML=`<div class="pop"><div style="font-size:64px">${e}</div><div class="big">${title}</div><div class="mut">${sub||''}</div></div>`;c.className='show';clearTimeout(celeT);celeT=setTimeout(()=>c.className='',2800)}
+function addNote(n){S.notes.unshift(n);S.notes=S.notes.slice(0,30);S.unread++;save();hdr()}
+function unlock(id){if(S.ach[id])return false;S.ach[id]=1;const a=ACH[id];addNote({icon:a[0],title:'New badge: '+a[1],body:'Great work!'});celebrate(a[0],'New badge!',a[1]);return true}
+function hdr(){$('#hav').textContent=S.av;$('#hn').textContent=me();$('#cn').textContent='🪙 '+(S.coins||0);$('#bd').textContent=S.unread;$('#bd').style.display=S.unread?'':'none'}
+
+// Sharing and challenges (a link carries only: table, time, friend's name)
+function share(t,time){const c=`c-${t}-${Math.round(time*10)}-${code()}`,link=location.href.split('#')[0]+'#'+c;
+  shareTxt(`${me()} finished the ${t} times table in ${time.toFixed(1)}s! Can you beat it? ${link}`,'Challenge a friend')}
+function shareTxt(txt,title){const e=encodeURIComponent(txt);window._st=txt;
+  modal(`<div class="c"><div class="big">📣 ${title||'Share'}</div><p class="mut" style="word-break:break-word">${esc(txt)}</p><div class="sh"><a class="wa" target="_blank" rel="noopener" href="https://wa.me/?text=${e}">💬 WhatsApp</a><a class="tg" target="_blank" rel="noopener" href="https://t.me/share/url?url=${encodeURIComponent(location.href.split('#')[0])}&text=${e}">✈️ Telegram</a><a href="sms:?&body=${e}">✉️ SMS</a><a href="mailto:?subject=Times%20Table%20Quest&body=${e}">📧 Email</a><button onclick="copyTxt()">📋 Copy</button>${navigator.share?'<button onclick="navigator.share({text:window._st}).catch(()=>{})">⋯ More apps</button>':''}</div><button style="width:100%;margin-top:12px" onclick="closeModal()">Close</button></div>`)}
+function copyTxt(){const t=window._st,fb=()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('Copied! 📋')}catch(e){toast('Copy failed')}a.remove()};try{navigator.clipboard.writeText(t).then(()=>toast('Copied! 📋'),fb)}catch(e){fb()}}
+let AC;function sfx(ok){if(S.snd){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),gn=AC.createGain(),n=AC.currentTime;o.connect(gn);gn.connect(AC.destination);o.frequency.setValueAtTime(ok?760:180,n);if(ok)o.frequency.setValueAtTime(990,n+.08);gn.gain.setValueAtTime(.12,n);gn.gain.exponentialRampToValueAtTime(.001,n+.22);o.start();o.stop(n+.22)}catch(e){}}
+  if(!ok)try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}}
+const dstr=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+function touchDay(){const t=dstr(new Date());if(S.last===t)return;S.streak=S.last===dstr(new Date(Date.now()-864e5))?(S.streak||0)+1:1;S.last=t;save()}
+const prog=()=>Object.keys(S.stars).filter(k=>S.stars[k]>0).length;
+const cnt=(a,b)=>{let n=0;for(let i=a;i<b;i++)if(S.stars[i]>0)n++;return n};
+const BP={p25:()=>[prog(),12],p50:()=>[prog(),23],p75:()=>[prog(),34],p100:()=>[prog(),45],st2:()=>[cnt(20,40),20],st3:()=>[cnt(40,45),5],pr:()=>[S.pr||0,10],dc7:()=>[S.dc||0,7],str:()=>[S.streak||0,3]};
+function checkAch(){let n=false;const u=id=>{if(unlock(id))n=true};
+  [['p25',12],['p50',23],['p75',34],['p100',45]].forEach(([id,m])=>{if(prog()>=m)u(id)});
+  if(cnt(20,40)>=20)u('st2');if(cnt(40,45)>=5)u('st3');if((S.pr||0)>=10)u('pr');if((S.streak||0)>=3)u('str');if((S.dc||0)>=1)u('dc');if((S.dc||0)>=7)u('dc7');S.cd=S.cd||{};
+  [['c1',cnt(0,20)>=20],['c2',cnt(20,40)>=20],['c3',cnt(40,45)>=5],['c4',prog()>=45]].forEach(([k,ok])=>{if(ok&&!S.cd[k]){S.cd[k]=dstr(new Date());addNote({icon:'📜',title:'Certificate earned: '+CT[k][0],body:'Find it in Me → Certificates'});if(!n)celebrate('📜','Certificate earned!',CT[k][0]);n=true}});
+  save();return n}
+function incoming(str){
+  const m=/c-(\d{1,2})-(\d{1,4})-?([A-Za-z0-9]*)/.exec(str||'');if(!m)return false;
+  const t=+m[1],tg=+m[2]/10,from=m[3]||'Friend';if(t<1||t>20||!tg)return false;
+  if(!S.notes.some(n=>n.id===m[0]))addNote({id:m[0],icon:'⚔️',title:from+' challenged you!',body:`Table of ${t} in under ${tg.toFixed(1)}s`,ch:[t,tg,from]});
+  modal(`<div class="c"><div style="font-size:60px">⚔️</div><div class="big">${esc(from)} challenged you!</div><p>Finish the <b>table of ${t}</b> in under <b>${tg.toFixed(1)}s</b> to win.</p><button class="p big2" onclick="acc(${t},${tg},'${from}')">Accept challenge</button><button onclick="closeModal()">Later</button></div>`);return true;
+}
+function acc(t,tg,from){closeModal();B.t=t;B.target=tg;B.from=from;startRun()}
+
+// ===== Firebase (Firestore REST) — paste your keys to go online =====
+const FB={projectId:'kids-1420d',apiKey:'AIzaSyBcw4rzJyc3h_n1fMJ1NRkbxGZbk7wCH3U'};
+const fbOn=()=>!!(FB.projectId&&FB.apiKey);
+const FS=()=>`https://firestore.googleapis.com/v1/projects/${FB.projectId}/databases/(default)/documents`;
+async function fbPut(col,id,o){if(!fbOn()||!navigator.onLine)return;try{const f={};for(const k in o)f[k]=typeof o[k]==='number'?{doubleValue:o[k]}:{stringValue:String(o[k])};await fetch(`${FS()}/${col}/${id}?key=${FB.apiKey}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:f})})}catch(e){}}
+async function fbGet(col,field,val){if(!fbOn()||!navigator.onLine)return null;try{const r=await fetch(`${FS()}:runQuery?key=${FB.apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId:col}],where:{fieldFilter:{field:{fieldPath:field},op:'EQUAL',value:{stringValue:String(val)}}},limit:300}})});const j=await r.json();if(!Array.isArray(j))return null;return j.filter(x=>x.document).map(x=>{const f=x.document.fields,o={};for(const k in f){const v=f[k];o[k]=v.doubleValue!==undefined?+v.doubleValue:v.integerValue!==undefined?+v.integerValue:v.stringValue}return o}).filter(o=>o.name&&isFinite(o.time))}catch(e){return null}}
+
+// ===== Daily challenge =====
+const dayKey=()=>new Date().toISOString().slice(0,10);
+function seeded(seed){let a=0;for(const c of seed)a=(a*31+c.charCodeAt(0))>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+const doneToday=()=>S.daily&&S.daily.day===dayKey();
+function startDaily(){
+  if(doneToday())return toast('Already done today ✔');
+  const o=Math.random;Math.random=seeded('ttq'+dayKey());let qs;
+  try{qs=Array.from({length:10},()=>mk(rnd(2,15),rnd(2,10),pick(['val','val','miss','pick'])))}finally{Math.random=o}
+  g={mode:'run',daily:true,t:0,target:null,from:'',qs,n:0,v:'',pen:0,t0:performance.now()};nextQ();
+}
+function finishDaily(){clearInterval(timer);const t=+elapsed().toFixed(1);g=null;S.daily={day:dayKey(),time:t};S.dc=(S.dc||0)+1;S.coins=(S.coins||0)+20;touchDay();save();hdr();
+  fbPut('daily',dayKey()+'_'+S.uid,{day:dayKey(),name:me(),time:t,uid:S.uid,av:S.av});
+  const n=checkAch();if(!n)celebrate('📆','Daily done!',t.toFixed(1)+'s · +20 🪙');BV='day';go('board')}
+function shareDaily(){shareTxt(`📆 ${me()} finished today's Times Table Quest daily challenge in ${S.daily.time.toFixed(1)}s! Can you beat it? ${location.href.split('#')[0]}`,'Share daily result')}
+function chal(t,time,from){B.t=t;B.target=time;B.from=from;startRun()}
+
+// ===== Spaced repetition (Leitner) + history =====
+const IV=[0,1,2,4,8,16],dayNum=()=>Math.floor(Date.now()/864e5);
+function srUpd(k,good){S.sr=S.sr||{};const v=S.sr[k]||{b:0,d:0};v.b=good?Math.min(5,v.b+1):1;v.d=dayNum()+(good?IV[v.b]:0);S.sr[k]=v}
+function dueFacts(){return Object.entries(S.sr||{}).filter(([k,v])=>v.d<=dayNum()).sort((a,b)=>a[1].b-b[1].b).map(([k])=>k.split('x').map(Number))}
+function recHist(good){const d=dstr(new Date());S.hist=S.hist||{};const h=S.hist[d]||[0,0];h[0]++;if(good)h[1]++;S.hist[d]=h}
+function setSmart(){P.smart=!P.smart;if(P.smart)P.weak=false;P.smart=false;S.prac=P;save();practice()}
+function setSmartGo(){P.smart=true;P.weak=false;P.smart=false;S.prac=P;save();startPractice()}
+
+// ===== Rewards =====
+const PAV=[['🐉',120],['🦖',150],['🧙',180],['🤖',220],['🦸',260],['👑',400]];
+const SKN=[['ocean','🌊 Ocean',150],['sunset','🌇 Sunset',150],['forest','🌳 Forest',200],['galaxy','🌌 Galaxy',300]];
+const myAV=()=>AV.concat(PAV.filter(a=>S.own[a[0]]).map(a=>a[0]));
+function skin(){if(S.skin)document.documentElement.dataset.skin=S.skin;else delete document.documentElement.dataset.skin}
+function buy(k,c){if(S.own[k])return;if((S.coins||0)<c)return toast('Need '+(c-(S.coins||0))+' more 🪙');S.coins-=c;S.own[k]=1;save();hdr();sfx(true);toast('Unlocked! 🎉');profile()}
+
+// ===== Learning aids =====
+const TR={1:'Any number × 1 stays the same.',2:'Just double it! 2 × 7 → 7 + 7 = 14.',3:'Double it, then add one more. 3 × 7 → 14 + 7 = 21.',4:'Double, then double again. 4 × 7 → 14 → 28.',5:'Half of × 10. 5 × 8 → 80 ÷ 2 = 40. Answers end in 0 or 5.',6:'Do × 5, then add one more. 6 × 7 → 35 + 7 = 42.',7:'Do × 5 plus × 2. 7 × 8 → 40 + 16 = 56.',8:'Double three times. 8 × 6 → 12 → 24 → 48.',9:'Use the finger trick below! Or do × 10 minus the number: 9 × 7 → 70 − 7 = 63. The digits always add up to 9.',10:'Just add a zero at the end.',11:'For 1–9, repeat the digit: 11 × 4 = 44. And 11 × 10 = 110.',12:'Do × 10, then add × 2. 12 × 7 → 70 + 14 = 84.',15:'Do × 10, then add half of that. 15 × 6 → 60 + 30 = 90.',20:'Double it, then add a zero. 20 × 7 → 14 → 140.'};
+const trick=t=>TR[t]||`Split it: ${t} × 6 = 10 × 6 + ${t-10} × 6 = 60 + ${(t-10)*6} = ${t*6}.`;
+function sayTable(t){if(!window.speechSynthesis)return toast('Speech not supported on this device');speechSynthesis.cancel();for(let i=1;i<=10;i++){const u=new SpeechSynthesisUtterance(`${t} times ${i} is ${t*i}`);u.rate=.9;speechSynthesis.speak(u)}}
+function fing(n){const e=$('#fg');if(e)e.innerHTML=`Fold finger <b>${n}</b> → <b>${n-1}</b> on the left = ${(n-1)*10}, <b>${10-n}</b> on the right = ${10-n}<br><b class="good">9 × ${n} = ${9*n}</b>`}
+const LS=[['📘 Stage 1 · Warm-up','Tap the right answer. Questions go in order from ×1 to ×10.','×2 = double · ×5 ends in 0 or 5 · ×10 add a zero · ×9 use the finger trick (Learn tab).'],['📗 Stage 2 · Shuffled','Same table, but questions are mixed up and some ask for the missing number.','For 4 × ? = 28 ask yourself: how many 4s make 28?'],['📙 Stage 3 · Mixed Master','Different tables together — think fast!','Split big numbers: 14 × 6 = 10 × 6 + 4 × 6 = 60 + 24 = 84.']];
+function lesson(sg,i){const x=LS[sg];modal(`<div class="c"><div class="big">${x[0]}</div><p>${x[1]}</p><div class="sum" style="margin-top:0">💡 ${x[2]}</div><button class="p big2" onclick="closeModal();playLevel(${i})">Start level ▶</button><button style="width:100%" onclick="closeModal();go('learn')">📖 Open Learn</button></div>`)}
+
+// ===== Reports & certificates =====
+let RV=null,CV='c1',BV='tbl',DIP=null;
+const CT={c1:['Stage 1','Tap the answer · Times tables 1–20',0,20],c2:['Stage 2','Shuffled challenge · Times tables 1–20',20,40],c3:['Stage 3','Mixed master challenges',40,45],c4:['Champion','All 45 levels completed',0,45]};
+function repData(){const days=[];for(let i=6;i>=0;i--){const d=dstr(new Date(Date.now()-i*864e5)),h=(S.hist||{})[d]||[0,0];days.push([d.split('-').slice(1).join('/'),h[0],h[1]])}
+  const tc={};Object.keys(S.weak||{}).forEach(k=>k.split('x').forEach(x=>{tc[x]=(tc[x]||0)+S.weak[k]}));
+  return {n:me(),a:S.av,d:days,wt:Object.entries(tc).sort((a,b)=>b[1]-a[1]).slice(0,4).map(x=>+x[0]),wf:Object.entries(S.weak||{}).sort((a,b)=>b[1]-a[1]).slice(0,6).map(x=>x[0].replace('x','×')),l:prog(),s:Object.values(S.stars).reduce((a,b)=>a+b,0),st:S.streak||0,dt:dstr(new Date())}}
+function repHTML(r){
+  const tq=r.d.reduce((a,x)=>a+x[1],0),tok=r.d.reduce((a,x)=>a+x[2],0),acc=tq?Math.round(tok/tq*100):0,act=r.d.filter(x=>x[1]>0).length,mx=Math.max(1,...r.d.map(x=>x[1]));
+  return `<div class="card" id="rep"><div class="c"><div style="font-size:48px">${esc(r.a)}</div><h2 style="margin:0">${esc(r.n)} · Weekly report</h2><div class="mut">${esc(r.dt)} · Times Table Quest</div></div>
+  <div class="stats" style="margin-top:12px"><div>${tq}<small>Questions</small></div><div>${acc}%<small>Accuracy</small></div><div>${act}/7<small>Active days</small></div></div>
+  <div class="stats" style="margin-top:8px"><div>${r.l}/45<small>Levels</small></div><div>${r.s}<small>⭐ Stars</small></div><div>${r.st}<small>🔥 Streak</small></div></div>
+  <h2>Last 7 days</h2><div class="wk">${r.d.map(x=>`<div><small>${x[1]?Math.round(x[2]/x[1]*100)+'%':'–'}</small><i style="height:${Math.max(4,x[1]/mx*80)}px"></i><small>${esc(x[0])}</small></div>`).join('')}</div>
+  <h2>Needs practice</h2>${r.wt.length?`<div>${r.wt.map(t=>`<span class="chip" style="margin-right:6px">× ${esc(t)}</span>`).join('')}</div><div class="mut" style="margin-top:8px">Tricky facts: ${r.wf.map(esc).join(' · ')}</div>`:'<div class="good">No weak spots right now 🎉</div>'}
+  <div class="mut" style="margin-top:12px">Tip: ${tq<30?'Short 10-minute practice every day works better than long sessions.':acc<80?'Focus on the tricky facts above using Smart review.':'Great work! Try the next stage or the daily challenge.'}</div></div>`}
+function report(){const r=RV||repData();$('#v').innerHTML=repHTML(r)+`<div class="card noprint" style="display:grid;gap:8px">${RV?`<button class="p" onclick="RV=null;history.replaceState(null,'',location.pathname+location.search);go('home')">▶ Open my game</button>`:`<button class="p" onclick="shareRep()">🔗 Share report link</button>`}<button onclick="window.print()">🖨 Save as PDF / Print</button></div>`}
+function repLink(){return location.href.split('#')[0]+'#r='+btoa(unescape(encodeURIComponent(JSON.stringify(repData())))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function shareRep(){shareTxt(`📊 ${me()}'s weekly Times Table Quest report: ${repLink()}`,'Share report')}
+function showRep(h){try{let b=h.replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';RV=JSON.parse(decodeURIComponent(escape(atob(b))));if(!Array.isArray(RV.d))throw 0;view='report';render();scrollTo(0,0)}catch(e){RV=null;toast('Invalid report link')}}
+function cert(){const c=CT[CV];let st=0;for(let i=c[2];i<c[3];i++)st+=S.stars[i]||0;
+  $('#v').innerHTML=`<div class="cert" id="rep"><div class="cin"><div style="font-size:44px">🏅</div><div class="ct">Certificate of Achievement</div><div class="mut">This certifies that</div><div class="cn">${esc(me())}</div><div class="mut">has successfully completed</div><div class="big">${c[0]} — ${c[1]}</div><div class="mut" style="margin-top:6px">in <b>Times Table Quest</b> with <b>⭐ ${st}</b> stars</div><div class="cd"><span>${esc((S.cd||{})[CV]||'')}<small>Date</small></span><span>🧮<small>Times Table Quest</small></span></div></div></div>
+  <div class="card noprint" style="display:grid;gap:8px"><button class="p" onclick="window.print()">🖨 Save as PDF / Print</button><button onclick="shareCert()">📣 Share</button><button onclick="go('profile')">← Back</button></div>`}
+function shareCert(){shareTxt(`🏅 ${me()} earned the ${CT[CV][0]} certificate in Times Table Quest! ${location.href.split('#')[0]}`,'Share certificate')}
+
+// ===== Install (PWA) =====
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();DIP=e;if(view==='home'||view==='profile')render()});
+function doInst(){if(!DIP)return;DIP.prompt();DIP.userChoice.finally(()=>{DIP=null;render()})}
+function instBtn(){if(DIP)return '<button class="p big2" onclick="doInst()">📲 Install app</button>';if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone)return '<div class="card c mut">📲 iPhone/iPad: tap Share → Add to Home Screen to install</div>';return ''}
+if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+// Game engine
+const LV=[];
+for(let t=1;t<=20;t++)LV.push({id:'1.'+t,type:'seq',a:t,b:t,limit:5});
+for(let t=1;t<=20;t++)LV.push({id:'2.'+t,type:'shuf',a:t,b:t,limit:4});
+[[1,5],[6,10],[11,15],[16,20],[1,20]].forEach((r,i)=>LV.push({id:'3.'+(i+1),type:'mix',a:r[0],b:r[1],limit:3}));
+function nearby(c,base){const s=new Set([c]);shuffle(base.slice()).forEach(x=>{if(s.size<4&&x>0&&x!==c)s.add(x)});let n=0;while(s.size<4&&n++<60){const d=c+rnd(-10,10);if(d>0)s.add(d)}return shuffle([...s].map(String))}
+function mk(a,b,kind){
+  const c=a*b,q={a,b,c,kind,mode:'choice',ans:c,ansTxt:String(c),txt:`${a} × ${b} = ?`};
+  if(kind==='miss'){if(Math.random()<.5){q.txt=`${a} × ? = ${c}`;q.ans=b}else{q.txt=`? × ${b} = ${c}`;q.ans=a}q.ansTxt=String(q.ans);const v=q.ans;q.opts=nearby(v,[v+1,v-1,v+2,v-2,v+3,v-3])}
+  else if(kind==='pick'){q.txt=`? = ${c}`;q.ansTxt=`${a} × ${b}`;const o=new Set([q.ansTxt]);let n=0;
+    while(o.size<3&&n++<40){const x=a+rnd(-2,2),y=b+rnd(-2,2);if(x>0&&y>0&&x*y!==c)o.add(`${x} × ${y}`)}q.opts=shuffle([...o])}
+  else q.opts=nearby(c,[c+a,c-a,c+b,c-b,c+10,c-10,c+1,c-1,(a+1)*b,(a-1)*b,a*(b+1),a*(b-1)]);
+  return q;
+}
+function genQs(l){
+  const ks=Array.from({length:10},(_,k)=>k+1);
+  if(l.type==='seq')return ks.map(k=>mk(l.a,k,'val'));
+  if(l.type==='shuf')return shuffle(ks).map(k=>mk(l.a,k,pick(['val','miss'])));
+  return ks.map(()=>mk(rnd(l.a,l.b),rnd(1,10),pick(['val','miss','pick'])));
+}
+function genPrac(){
+  let pool=[];
+  if(P.smart)pool=dueFacts();else if(P.weak)pool=Object.keys(S.weak||{}).map(k=>k.split('x').map(Number));
+  else P.tables.forEach(t=>{for(let b=1;b<=10;b++)pool.push([t,b])});
+  if(!pool.length)return null;
+  const N=P.smart?Math.min(P.count,Math.max(pool.length,5)):P.count,seq=P.tables.length===1&&!P.weak&&!P.smart&&P.order==='seq',ks=P.kinds.length?P.kinds:['val'];let list=[];
+  if(seq){for(let i=0;i<N;i++)list.push(pool[i%pool.length])}
+  else{while(list.length<N){const r=shuffle(pool.slice());if(list.length&&r[0]===list[list.length-1])r.push(r.shift());list.push(...r)}list=list.slice(0,N)}
+  return list.map(([a,b])=>{if(!seq&&Math.random()<.5)[a,b]=[b,a];return mk(a,b,pick(ks))});
+}
+let view='home',L={t:4},B={t:4},g=null,timer=null,R=null;
+const tabs=[['home','🏠','Home'],['learn','📖','Learn'],['practice','✏️','Practice'],['play','🎮','Play'],['board','🏆','Board']];
+const cls=t=>'c'+(t<=3?1:t<=6?2:t<=9?3:t<=12?4:t<=16?5:6);
+function go(v){clearInterval(timer);g=null;view=v;if(v==='notes'){S.unread=0;save();hdr()}render();scrollTo(0,0)}
+function render(){$('#nav').innerHTML=tabs.map(t=>`<button class="${view===t[0]?'on':''}" onclick="go('${t[0]}')"><span>${t[1]}</span>${t[2]}</button>`).join('');({home,learn,practice,play,board,profile,notes,report,cert})[view]()}
+
+function home(){
+  const cl=prog(),tot=Object.values(S.stars).reduce((a,b)=>a+b,0),cur=Math.min(S.unlocked,44),due=dueFacts().length,dd=doneToday();
+  $('#v').innerHTML=`<div class="hero"><div style="font-size:58px">${S.av}</div><h1>Hi ${esc(S.name)}! 👋</h1><div>Ready to become a times table pro?</div><div class="prog"><i style="width:${cl/45*100}%"></i></div><div>${cl}/45 levels · ⭐ ${tot} · 🪙 ${S.coins||0}${S.streak?` · 🔥 ${S.streak} day${S.streak>1?'s':''}`:''}</div></div>
+  <button class="p big2" onclick="playLevel(${cur})">▶ Continue · Level ${LV[cur].id}</button>
+  <div class="two"><button class="tile a" onclick="go('learn')">📖<br>Learn</button><button class="tile b" onclick="go('practice')">✏️<br>Practice</button><button class="tile c" onclick="go('play')">🎮<br>Play</button><button class="tile d" onclick="go('board')">🏆<br>Leaderboard</button></div>
+  <div class="card" style="display:grid;gap:8px"><button class="${dd?'':'p'}" onclick="${dd?"BV='day';go('board')":'startDaily()'}">📆 ${dd?'Daily done · see ranking':'Daily challenge · +20 🪙'}</button>${due?`<button onclick="setSmartGo()">🧠 Smart review · ${due} facts due</button>`:''}</div>
+  ${instBtn()}
+  <div class="card"><h2 style="margin-top:0">Got a challenge from a friend?</h2><div style="display:flex;gap:8px"><input id="cc" placeholder="Paste link or code"><button class="p" onclick="if(!incoming($('#cc').value))toast('Code not found')">Go</button></div></div>`;
+}
+function pracT(a){P.tables=a;P.weak=false;P.smart=false;S.prac=P;save();go('practice')}
+function learn(){
+  const t=L.t;
+  $('#v').innerHTML='<div class="card"><h2 style="margin-top:0">Pick your table</h2><div class="grid">'+Array.from({length:20},(_,i)=>`<button class="t ${cls(i+1)} ${t==i+1?'sel':''}" onclick="L.t=${i+1};learn()">${i+1}</button>`).join('')+'</div></div>'+
+  `<div class="card"><h2 style="margin-top:0">Table of ${t}</h2>`+Array.from({length:10},(_,i)=>`<div class="row"><span>${t} × ${i+1}</span><b>${t*(i+1)}</b></div>`).join('')+
+  `<div style="display:flex;gap:8px;margin-top:12px"><button class="p" style="flex:1" onclick="B.t=${t};startRun()">⏱ Speed run</button><button style="flex:1" onclick="pracT([${t}])">✏️ Practice</button></div></div>
+  <div class="card"><h2 style="margin-top:0">💡 Trick for ${t}</h2><div>${trick(t)}</div><div class="lbl">Skip counting</div><div class="skip">${Array.from({length:10},(_,i)=>`<span class="chip">${t*(i+1)}</span>`).join('')}</div>
+  <div style="display:flex;gap:8px;margin-top:12px"><button class="p" style="flex:1" onclick="sayTable(${t})">🔊 Say it</button><button style="flex:1" onclick="window.speechSynthesis&&speechSynthesis.cancel()">⏹ Stop</button></div>
+  ${t===9?`<div class="lbl">🖐 9s finger trick</div><div class="mut">Hold up 10 fingers. Fold down the finger number you multiply by.</div><div class="fgs" style="margin-top:8px">${Array.from({length:10},(_,i)=>`<button onclick="fing(${i+1})">${i+1}</button>`).join('')}</div><div id="fg" class="c" style="margin-top:10px">Tap a finger number</div>`:''}</div>`;
+}
+function setP(k,v){P[k]=v;if(k==='weak'&&v)P.smart=false;S.prac=P;save();practice()}
+function togT(t){const i=P.tables.indexOf(t);if(i<0)P.tables.push(t);else P.tables.splice(i,1);P.tables.sort((a,b)=>a-b);P.weak=false;P.smart=false;S.prac=P;save();practice()}
+function setT(a,b){P.tables=Array.from({length:b-a+1},(_,i)=>a+i);P.weak=false;P.smart=false;S.prac=P;save();practice()}
+function togK(k){const i=P.kinds.indexOf(k);if(i<0)P.kinds.push(k);else if(P.kinds.length>1)P.kinds.splice(i,1);S.prac=P;save();practice()}
+function startPractice(){
+  if(!P.weak&&!P.smart&&!P.tables.length)return toast('Pick at least one table');
+  const qs=genPrac();if(!qs)return toast('Nothing to review yet 🎉');
+  S.prac=P;save();g={mode:'quiz',i:-1,l:{id:'P',limit:P.time?P.sec:0},qs,n:0,ok:0,log:[],free:true,prac:true};nextQ();
+}
+function practice(){
+  const sg=(k,items)=>`<div class="seg">${items.map(([v,l])=>`<button class="${P[k]===v?'on':''}" onclick="setP('${k}',${typeof v==='string'?`'${v}'`:v})">${l}</button>`).join('')}</div>`;
+  const wk=Object.keys(S.weak||{}).length,due=dueFacts().length,single=P.tables.length===1&&!P.weak&&!P.smart;
+  const KN={val:'a × b = ?',miss:'Missing number',pick:'Find the sum'};
+  const what=P.smart?'🧠 Smart review':P.weak?'🎯 Weak spots':P.tables.length>1?'🔀 Mixed: '+P.tables.join(', '):P.tables.length?'Table of '+P.tables[0]:'Pick a table';
+  $('#v').innerHTML=`<div class="card"><h2 style="margin-top:0">✏️ Custom practice</h2><div class="mut">Tap the answer — it submits instantly. Pick 2+ tables for mixed practice.</div>
+  <div class="lbl">1 · Tables</div><div class="grid">${Array.from({length:20},(_,i)=>{const t=i+1,on=P.tables.includes(t)&&!P.weak&&!P.smart;return `<button class="t ${cls(t)} ${on?'sel':'dim'}" onclick="togT(${t})">${t}</button>`}).join('')}</div>
+  <div class="quick"><button onclick="setT(1,5)">1–5</button><button onclick="setT(6,10)">6–10</button><button onclick="setT(11,15)">11–15</button><button onclick="setT(16,20)">16–20</button><button onclick="setT(1,20)">🎲 All</button><button onclick="P.tables=[];S.prac=P;practice()">Clear</button></div>
+  <button style="width:100%;margin-top:10px" class="${P.weak?'p':''}" ${wk?'':'disabled'} onclick="setP('weak',${!P.weak})">🎯 Weak spots only ${wk?`(${wk})`:'(none yet)'}</button>
+  <button style="width:100%;margin-top:8px" class="${P.smart?'p':''}" ${due?'':'disabled'} onclick="setSmart()">🧠 Smart review · ${due} due today</button>
+  <div class="lbl">2 · Timer</div>${sg('time',[[true,'⏱ With time'],[false,'🧘 No timer']])}
+  ${P.time?`<div class="mut" style="margin-top:8px">Seconds per question</div>${sg('sec',[[3,'3s'],[5,'5s'],[8,'8s'],[10,'10s'],[15,'15s']])}`:''}
+  <div class="lbl">3 · Questions</div>${sg('count',[[10,'10'],[20,'20'],[30,'30'],[50,'50']])}
+  <div class="lbl">4 · Question types</div><div class="seg">${Object.entries(KN).map(([k,n])=>`<button class="${P.kinds.includes(k)?'on':''}" onclick="togK('${k}')">${n}</button>`).join('')}</div>
+  ${single?`<div class="lbl">5 · Order</div>${sg('order',[['seq','1 → 10 in order'],['shuf','🔀 Shuffled']])}`:''}
+  <div class="sum">${what} · ${P.count} questions · ${P.time?P.sec+'s each':'no timer'}</div>
+  <button class="p big2" onclick="startPractice()">▶ Start practice</button></div>`;
+}
+function play(){
+  const sec=(a,b,name)=>`<h2>${name}</h2><div class="grid">`+LV.slice(a,b).map((l,k)=>{const i=a+k,st=S.stars[i]||0;
+    return `<button class="lv ${st?'done':''}" ${i>S.unlocked?'disabled':''} onclick="playLevel(${i})">${i>S.unlocked?'🔒':l.id}<small>${st?'⭐'.repeat(st):l.limit+'s'}</small></button>`}).join('')+'</div>';
+  $('#v').innerHTML='<div class="card"><div class="mut">Answer 8 of 10 in time to pass. Perfect score = 3 stars.</div>'+sec(0,20,'Stage 1 · Tap the answer (5s)')+sec(20,40,'Stage 2 · Shuffled, tap the answer (4s)')+sec(40,45,'Stage 3 · Mixed challenges (3s)')+'</div>';
+}
+function notes(){
+  $('#v').innerHTML='<div class="card"><h2 style="margin-top:0">🔔 Notifications</h2>'+(S.notes.length?S.notes.map(n=>`<div class="row"><span style="font-size:28px">${n.icon}</span><span style="flex:1"><b>${esc(n.title)}</b><div class="mut">${esc(n.body)}</div></span>${n.ch?`<button class="p" onclick="acc(${n.ch[0]},${n.ch[1]},'${n.ch[2]}')">Play</button>`:''}</div>`).join(''):'<div class="mut">Nothing yet. Challenges and badges show up here.</div>')+'</div>';
+}
+function profile(){
+  const mine=S.board.filter(r=>r.name===me()).sort((a,b)=>a.time-b.time),best=mine[0],tot=Object.values(S.stars).reduce((a,b)=>a+b,0),got=Object.keys(ACH).filter(k=>S.ach[k]).length;
+  $('#v').innerHTML=`<div class="card c"><div style="font-size:64px">${S.av}</div><input id="pn" maxlength="12" value="${esc(S.name)}" style="text-align:center;font-size:20px;font-weight:800" onchange="S.name=this.value.trim()||'Player';save();hdr()">
+  <div class="avs" style="justify-content:center;margin-top:10px">${myAV().map(a=>`<button onclick="S.av='${a}';save();hdr();profile()">${a}</button>`).join('')}</div></div>
+  <div class="card"><div class="stats"><div>${tot}<small>⭐ Stars</small></div><div>${prog()}/45<small>Levels</small></div><div>${S.coins||0}<small>🪙 Coins</small></div></div>
+  <button class="p big2" ${best?'':'disabled'} onclick="share(${best?best.t:0},${best?best.time:0})">📣 ${best?`Challenge a friend (table ${best.t}, ${best.time.toFixed(1)}s)`:'Do a speed run to challenge friends'}</button>
+  <button style="width:100%;margin-top:8px" onclick="go('report')">📊 Parent / Teacher report</button></div>
+  <div class="card"><h2 style="margin-top:0">🎁 Rewards shop · 🪙 ${S.coins||0}</h2><div class="mut">Earn coins from levels, practice, speed runs and the daily challenge.</div>
+  <div class="lbl">Avatars</div><div class="avs">${PAV.map(([a,c])=>S.own[a]?`<button onclick="S.av='${a}';save();hdr();profile()">${a}</button>`:`<button class="shopb" onclick="buy('${a}',${c})">${a}<small>🪙${c}</small></button>`).join('')}</div>
+  <div class="lbl">Colour themes</div><div class="seg">${[['','🎨 Classic',0]].concat(SKN).map(([k,n,c])=>(k===''||S.own[k])?`<button class="${(S.skin||'')===k?'on':''}" onclick="S.skin='${k}';save();skin();profile()">${n}</button>`:`<button onclick="buy('${k}',${c})">${n}<small style="display:block">🪙 ${c}</small></button>`).join('')}</div></div>
+  <div class="card"><h2 style="margin-top:0">📜 Certificates</h2><div style="display:grid;gap:8px">${Object.entries(CT).map(([k,c])=>(S.cd||{})[k]?`<button class="p" onclick="CV='${k}';go('cert')">📜 ${c[0]} certificate</button>`:`<div class="row mut"><span>🔒 ${c[0]}</span><span>${c[1]}</span></div>`).join('')}</div></div>
+  <div class="card"><h2 style="margin-top:0">Settings</h2><div class="row"><span>🔊 Sound & vibration</span><button class="${S.snd?'p':''}" onclick="S.snd=!S.snd;save();profile()">${S.snd?'On':'Off'}</button></div>
+  <div class="row"><span>🎨 Mode</span><select onchange="S.theme=this.value;save();theme()"><option value="" ${S.theme?'':'selected'}>Auto</option><option value="light" ${S.theme==='light'?'selected':''}>Light</option><option value="dark" ${S.theme==='dark'?'selected':''}>Dark</option></select></div>${instBtn()}</div>
+  <div class="card"><h2 style="margin-top:0">Badges · ${got}/${Object.keys(ACH).length}</h2>${Object.entries(ACH).map(([k,a])=>{const on=S.ach[k],pg=BP[k]?BP[k]():null;
+    return `<div class="badge ${on?'':'off'}"><span>${a[0]}</span><div style="flex:1"><b>${a[1]}</b>${pg?`<div class="pb"><i style="width:${on?100:Math.min(100,pg[0]/pg[1]*100)}%"></i></div><small class="mut">${on?'Completed ✔':Math.min(pg[0],pg[1])+' / '+pg[1]}</small>`:`<div class="mut">${on?'Unlocked ✔':'Locked'}</div>`}</div></div>`}).join('')}</div>`;
+}
+function theme(){skin();if(S.theme)document.documentElement.dataset.theme=S.theme;else delete document.documentElement.dataset.theme}
+function playLevel(i,free){const sg=i<20?0:i<40?1:2;S.seen=S.seen||{};if(!free&&!S.seen[sg]){S.seen[sg]=1;save();return lesson(sg,i)}const l=LV[i];g={mode:'quiz',i,l,qs:genQs(l),n:0,ok:0,log:[],free};nextQ()}
+function mistakes(){g={mode:'quiz',i:R.i,l:R.l,qs:shuffle(R.qs.slice()),n:0,ok:0,log:[],free:true,prac:R.prac,mist:true};nextQ()}
+function startRun(){
+  g={mode:'run',t:B.t,target:B.target||null,from:B.from||'',qs:Array.from({length:10},(_,k)=>mk(B.t,k+1,'val')),n:0,v:'',pen:0,t0:performance.now()};
+  B.target=null;B.from='';nextQ();
+}
+function screen(){
+  const q=g.qs[g.n],quiz=g.mode==='quiz',lim=quiz?g.l.limit:0;
+  const info=quiz?(lim>0?'<div class="bar"><i id="bar"></i></div>':'<div class="mut c" style="margin-top:8px">🧘 No timer · take your time</div>'):(g.target?`<div class="mut c" style="margin-top:8px">Beat ${g.target.toFixed(1)}s to win!</div>`:'');
+  const clk=quiz?(lim>0?lim.toFixed(1):'🧘'):'0.0';
+  $('#v').innerHTML=`<div class="card" id="box"><div class="chips"><span class="chip" id="clk">${clk}</span><span class="chip">${g.n+1}/${g.qs.length}</span></div>${info}<div class="chalk">${q.txt}</div><div class="opts">${q.opts.map(o=>`<button class="opt" data-v="${o}" onclick="submit(this.dataset.v)">${o}</button>`).join('')}</div><button style="margin-top:12px;width:100%" onclick="go('${quiz?(g.free?(g.prac?'practice':'learn'):'play'):'board'}')">✖ Quit</button></div>`;
+}
+const elapsed=()=>(performance.now()-g.t0)/1000+g.pen;
+function nextQ(){
+  clearInterval(timer);g.v='';g.lock=false;screen();
+  if(g.mode==='quiz'){if(g.l.limit>0){const T=g.l.limit*1000,end=performance.now()+T;
+    timer=setInterval(()=>{const r=end-performance.now(),b=$('#bar'),c=$('#clk');if(b)b.style.width=Math.max(0,r/T*100)+'%';if(c)c.textContent=Math.max(0,r/1000).toFixed(1);if(r<=0)submit(null)},50)}}
+  else timer=setInterval(()=>{const c=$('#clk');if(c)c.textContent=elapsed().toFixed(1)},100);
+}
+function submit(val){
+  if(!g||g.lock)return;
+  const q=g.qs[g.n],to=val==null,good=!to&&val===q.ansTxt,btns=[...document.querySelectorAll('.opt')];
+  if(g.mode==='run'){
+    if(!good){g.pen+=2;sfx(false);const b=$('#box');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');btns.forEach(x=>{if(x.dataset.v===val){x.classList.add('no');x.disabled=true}});return}
+    sfx(true);if(++g.n>=g.qs.length)return finishRun();return nextQ();
+  }
+  clearInterval(timer);g.lock=true;if(good)g.ok++;sfx(good);
+  const k=Math.min(q.a,q.b)+'x'+Math.max(q.a,q.b);S.weak=S.weak||{};srUpd(k,good);recHist(good);
+  if(good){if(S.weak[k]&&--S.weak[k]<=0)delete S.weak[k]}else S.weak[k]=(S.weak[k]||0)+1;
+  g.log.push({q:q.txt,your:to?'⏰':val,right:q.ansTxt,good});
+  btns.forEach(b=>{b.disabled=true;if(b.dataset.v===q.ansTxt)b.classList.add('ok');else if(b.dataset.v===val)b.classList.add('no')});
+  setTimeout(()=>{if(!g)return;if(++g.n>=g.qs.length)finishQuiz();else nextQ()},good?450:1300);
+}
+function finishQuiz(){
+  const N=g.qs.length,fr=g.free,pr=g.prac,mist=g.mist,i=g.i,ok=g.ok,p=fr?ok>=Math.ceil(N*.8):ok>=8,st=ok===N?3:ok>=N-1?2:p?1:0,pct=Math.round(ok/N*100);
+  const bad=g.qs.filter((q,k)=>!g.log[k].good);R={i,l:g.l,qs:bad,prac:pr};
+  const rows=g.log.map(r=>`<div class="rv ${r.good?'g':'r'}"><span>${r.q}</span><span>${r.good?'✔':esc(r.your)}</span><span>${r.right}</span></div>`).join('');
+  const nxt=p&&!fr&&i<LV.length-1;touchDay();let n=false,gain=0;
+  if(p&&!fr){gain=S.stars[i]?2:10+5*st;S.coins=(S.coins||0)+gain;S.stars[i]=Math.max(S.stars[i]||0,st);if(i===S.unlocked&&i<LV.length-1)S.unlocked++;
+    n=unlock('first');if(st===3)n=unlock('perfect')||n;if(S.unlocked>=20)n=unlock('s2')||n;n=checkAch()||n;if(!n)celebrate('🎉','Level cleared!','⭐'.repeat(st))}
+  else if(pr&&!mist){gain=Math.min(10,ok>>1);S.coins=(S.coins||0)+gain;S.pr=(S.pr||0)+1;n=checkAch();if(p&&!n)celebrate('👏','Great practice!',pct+'% correct')}
+  else if(p)celebrate('👏','All correct!','Awesome practice!');
+  save();hdr();
+  window._res=`${me()} scored ${ok}/${N} ${fr?'in practice':'on level '+LV[i].id}${fr?'':' '+'⭐'.repeat(st)} in Times Table Quest! Can you beat me? ${location.href.split('#')[0]}`;
+  $('#v').innerHTML=`<div class="card"><div class="big">${p?'🎉 Great job!':'💪 Keep going!'} ${ok}/${N} · ${pct}% ${fr?'':'⭐'.repeat(st)}</div>${gain?`<div class="mut c">+${gain} 🪙 coins</div>`:''}
+  <div class="rv h"><span>Question</span><span>Your answer</span><span>Correct</span></div>${rows}
+  <div style="display:grid;gap:8px;margin-top:14px">${bad.length?'<button class="p" onclick="mistakes()">WORK ON MISTAKES</button>':''}${nxt?`<button class="p" onclick="playLevel(${i+1})">NEXT LEVEL ▶</button>`:''}${pr&&!mist?'<button class="p" onclick="startPractice()">🔁 PRACTICE AGAIN</button>':''}<button onclick="shareTxt(window._res,'Share my score')">📣 Share score</button><button onclick="go('${fr?(pr?'practice':'learn'):'play'}')">OK</button></div></div>`;
+  g=null;
+}
+function finishRun(){if(g&&g.daily)return finishDaily();
+  clearInterval(timer);const t=+elapsed().toFixed(1),tg=g.target,tb=g.t,from=g.from;
+  const prev=S.board.filter(r=>r.name===me()&&r.t===tb).map(r=>r.time),rec=prev.length&&t<Math.min(...prev);
+  S.board.push({name:me(),t:tb,time:t});S.board.sort((a,b)=>a.time-b.time);S.board=S.board.slice(0,100);
+  const won=tg&&t<tg;if(won)S.wins++;if(!prev.length||rec)fbPut('scores',tb+'_'+S.uid,{tb:String(tb),name:me(),time:t,uid:S.uid,av:S.av});save();hdr();
+  touchDay();S.coins=(S.coins||0)+5;let n=false;if(t<10)n=unlock('speed');if(won)n=unlock('win')||n;n=checkAch()||n;
+  if(!n){if(won)celebrate('🏆','You won!',`You beat ${esc(from||'the challenge')}!`);else if(rec)celebrate('🔥','New personal best!',t.toFixed(1)+'s')}
+  const msg=tg?(won?`<span class="good">You beat ${esc(from)}’s ${tg.toFixed(1)}s by ${(tg-t).toFixed(1)}s! 🏅</span>`:`<span class="bad">Missed by ${(t-tg).toFixed(1)}s. Try again!</span>`):'Saved to the leaderboard.';
+  B.t=tb;g=null;
+  $('#v').innerHTML=`<div class="card"><div class="big">⏱ Table of ${tb}</div><div class="chalk">${t.toFixed(1)}s</div><div class="big">${msg}</div><div class="mut c" style="margin-top:6px">Each wrong answer adds 2 seconds.</div>
+  <button class="p big2" onclick="share(${tb},${t})">📣 ${won?'Challenge a friend to beat me':'Challenge a friend'}</button>
+  <div style="display:flex;gap:8px"><button style="flex:1" onclick="startRun()">Again</button><button style="flex:1" onclick="go('board')">Leaderboard</button></div></div>`;
+}
+function board(){
+  const tb=BV==='tbl',d=doneToday();
+  $('#v').innerHTML=`<div class="card"><div class="seg"><button class="${tb?'on':''}" onclick="BV='tbl';board()">🌍 Tables</button><button class="${tb?'':'on'}" onclick="BV='day';board()">📆 Daily</button></div>
+  ${tb?`<div style="display:flex;gap:8px;align-items:center;margin-top:12px"><span>Table of</span><select onchange="B.t=+this.value;board()">${Array.from({length:20},(_,i)=>`<option ${B.t==i+1?'selected':''}>${i+1}</option>`).join('')}</select><button class="p" style="margin-left:auto" onclick="startRun()">⏱ Speed run</button></div>`
+  :`<div class="sum">📆 Daily Challenge · ${dayKey()}<div class="mut" style="font-weight:500">Same 10 questions for everyone. One ranked try a day.</div>${d?`<div class="good" style="margin-top:6px">Your time today: ${S.daily.time.toFixed(1)}s ✔</div><button style="margin-top:8px" onclick="shareDaily()">📣 Share</button>`:`<button class="p big2" onclick="startDaily()">▶ Start today's challenge</button>`}</div>`}
+  <h2>Top times</h2><div id="lb" class="mut">Loading…</div><div class="mut" id="lbn" style="margin-top:10px"></div></div>`;
+  fillLB(tb);
+}
+async function fillLB(tb){
+  let rows=await (tb?fbGet('scores','tb',B.t):fbGet('daily','day',dayKey()));const online=!!rows;
+  if(!rows)rows=tb?S.board.filter(r=>r.t==B.t).map(r=>({name:r.name,time:r.time,av:'',uid:r.name===me()?S.uid:r.name})):(doneToday()?[{name:me(),time:S.daily.time,av:S.av,uid:S.uid}]:[]);
+  rows=rows.sort((a,b)=>a.time-b.time).slice(0,10);
+  const el=$('#lb');if(!el||view!=='board'||(BV==='tbl')!==tb)return;
+  el.className='';el.innerHTML=rows.length?rows.map((r,i)=>`<div class="row"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${esc(r.av||'')} ${esc(r.name)}${r.uid===S.uid?' (you)':''}</span><span><b>${(+r.time).toFixed(1)}s</b> ${tb?(r.uid===S.uid?`<button onclick="share(${B.t},${r.time})">📣</button>`:`<button onclick="chal(${B.t},${r.time},'${String(r.name).replace(/[^A-Za-z0-9]/g,'')}')">⚔</button>`):''}</span></div>`).join(''):'<div class="mut">No times yet. Be the first!</div>';
+  $('#lbn').textContent=online?'🌐 Live online leaderboard':(fbOn()?'📴 Offline · showing this device only':'📴 Local board · add your Firebase keys to go online');
+}
+function welcome(cb){
+  let av=S.av;window.pickAv=a=>{av=a;document.querySelectorAll('#wa button').forEach(b=>b.style.outline=b.textContent===a?'3px solid var(--pri)':'')};
+  modal(`<div class="c"><div style="font-size:56px">🧮</div><div class="big">Welcome to Times Table Quest!</div><p class="mut">What’s your name?</p><input id="wn" maxlength="12" placeholder="Your name" style="text-align:center;font-size:20px"><p class="mut">Pick your buddy</p><div class="avs" id="wa" style="justify-content:center">${AV.map(a=>`<button onclick="pickAv('${a}')">${a}</button>`).join('')}</div><button class="p big2" id="wgo">Let’s go! 🚀</button></div>`);
+  pickAv(av);$('#wgo').onclick=()=>{const n=$('#wn').value.trim();if(!n){$('#wn').focus();toast('Please type your name');return}S.name=n;S.av=av;save();closeModal();hdr();render();celebrate(av,'Hi '+esc(n)+'!','Let’s become times table pros');setTimeout(cb,2900)};
+}
+function chk(){if(/^#r=/.test(location.hash))return showRep(location.hash.slice(3));if(location.hash.length>2)incoming(location.hash)}
+addEventListener('hashchange',()=>{if(/^#r=/.test(location.hash))showRep(location.hash.slice(3));else if(S.name)chk()});
+theme();hdr();render();
+if(/^#r=/.test(location.hash))showRep(location.hash.slice(3));else if(!S.name)welcome(chk);else chk();
+</script></body></html>
