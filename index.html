@@ -178,14 +178,16 @@ function acc(t,tg,from){closeModal();B.t=t;B.target=tg;B.from=from;startRun()}
 const FB={projectId:'kids-1420d',apiKey:'AIzaSyBcw4rzJyc3h_n1fMJ1NRkbxGZbk7wCH3U'};
 const fbOn=()=>!!(FB.projectId&&FB.apiKey);
 const FS=()=>`https://firestore.googleapis.com/v1/projects/${FB.projectId}/databases/(default)/documents`;
-async function fbPut(col,id,o){if(!fbOn()||!navigator.onLine)return;try{const f={};for(const k in o)f[k]=typeof o[k]==='number'?{doubleValue:o[k]}:{stringValue:String(o[k])};const r=await fetch(`${FS()}/${col}/${id}?key=${FB.apiKey}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:f})});return r.ok}catch(e){return false}}
-async function fbGet(col,field,val){if(!fbOn()||!navigator.onLine)return null;try{const r=await fetch(`${FS()}:runQuery?key=${FB.apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId:col}],where:{fieldFilter:{field:{fieldPath:field},op:'EQUAL',value:{stringValue:String(val)}}},limit:300}})});const j=await r.json();if(!Array.isArray(j))return null;return j.filter(x=>x.document).map(x=>{const f=x.document.fields,o={};for(const k in f){const v=f[k];o[k]=v.doubleValue!==undefined?+v.doubleValue:v.integerValue!==undefined?+v.integerValue:v.stringValue}return o}).filter(o=>o.name&&isFinite(o.time))}catch(e){return null}}
+async function fbPut(col,id,o){if(!fbOn()||!navigator.onLine)return;try{const f={};for(const k in o)f[k]=typeof o[k]==='number'?{doubleValue:o[k]}:{stringValue:String(o[k])};const r=await fetch(`${FS()}/${col}/${id}?key=${FB.apiKey}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:f})});if(!r.ok){let m='';try{m=(await r.json()).error.message}catch(e){}window._fbErr='write '+r.status+(m?' · '+m:'')}else window._fbErr='';return r.ok}catch(e){window._fbErr='write failed · '+e.message;return false}}
+async function fbGet(col,field,val){if(!fbOn()||!navigator.onLine)return null;try{const r=await fetch(`${FS()}:runQuery?key=${FB.apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId:col}],where:{fieldFilter:{field:{fieldPath:field},op:'EQUAL',value:{stringValue:String(val)}}},limit:300}})});const j=await r.json();if(!Array.isArray(j)){window._fbErr='read '+r.status+((j&&j.error&&j.error.message)?' · '+j.error.message:'');return null}window._fbErr='';return j.filter(x=>x.document).map(x=>{const f=x.document.fields,o={};for(const k in f){const v=f[k];o[k]=v.doubleValue!==undefined?+v.doubleValue:v.integerValue!==undefined?+v.integerValue:v.stringValue}return o}).filter(o=>o.name&&isFinite(o.time))}catch(e){window._fbErr='read failed · '+e.message;return null}}
 
-async function fbAll(col){if(!fbOn()||!navigator.onLine)return null;try{const r=await fetch(`${FS()}:runQuery?key=${FB.apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId:col}],limit:500}})});const j=await r.json();if(!Array.isArray(j))return null;return j.filter(x=>x.document).map(x=>{const f=x.document.fields,o={};for(const k in f){const v=f[k];o[k]=v.doubleValue!==undefined?+v.doubleValue:v.integerValue!==undefined?+v.integerValue:v.stringValue}return o})}catch(e){return null}}
+async function fbAll(col){if(!fbOn()||!navigator.onLine)return null;try{const r=await fetch(`${FS()}:runQuery?key=${FB.apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId:col}],limit:500}})});const j=await r.json();if(!Array.isArray(j)){window._fbErr='read '+r.status+((j&&j.error&&j.error.message)?' · '+j.error.message:'');return null}window._fbErr='';return j.filter(x=>x.document).map(x=>{const f=x.document.fields,o={};for(const k in f){const v=f[k];o[k]=v.doubleValue!==undefined?+v.doubleValue:v.integerValue!==undefined?+v.integerValue:v.stringValue}return o})}catch(e){window._fbErr='read failed · '+e.message;return null}}
 const totStars=()=>Object.values(S.stars).reduce((a,b)=>a+b,0);
 const certN=()=>Object.keys(S.cd||{}).filter(k=>S.cd[k]).length;
 const myPts=()=>totStars()*10+prog()*5+(S.dc||0)*5+(S.wins||0)*10+certN()*50;
 let SYNC_SIG='';
+async function pushAllMine(){if(!S.name||!fbOn())return;SYNC_SIG='';await syncMe();const b={};S.board.filter(r=>r.name===me()).forEach(r=>{if(!b[r.t]||r.time<b[r.t].time)b[r.t]=r});for(const t in b)await fbPut('scores',t+'_'+S.uid,{tb:String(t),name:me(),time:b[t].time,uid:S.uid,av:avT(S.av)});if(doneToday())await fbPut('daily',dayKey()+'_'+S.uid,{day:dayKey(),name:me(),time:S.daily.time,uid:S.uid,av:avT(S.av)})}
+let PUSHED=0;
 async function syncMe(){if(!S.name||!fbOn())return;const o={uid:S.uid,name:me(),av:avT(S.av),stars:totStars(),lv:prog(),dc:S.dc||0,pts:myPts(),st:S.streak||0},sig=JSON.stringify(o);if(sig===SYNC_SIG)return;if(await fbPut('players',S.uid,o))SYNC_SIG=sig}
 
 // ===== Daily challenge =====
@@ -472,6 +474,7 @@ function board(){
 }
 async function fillLB(){
   const m=BV,t=B.t;let rows=null,online=false;
+  if(!PUSHED||Date.now()-PUSHED>60000){PUSHED=Date.now();await pushAllMine()}
   if(m==='all'){
     rows=await fbAll('players');online=!!rows;rows=(rows||[]).filter(r=>r.name&&isFinite(r.pts)&&r.pts>0);
     if(S.name){const mine={uid:S.uid,name:me(),av:avT(S.av),pts:myPts(),stars:totStars(),lv:prog()},i=rows.findIndex(r=>r.uid===S.uid);if(i>=0)rows[i]=Object.assign(rows[i],mine);else if(mine.pts>0)rows.push(mine)}
@@ -498,12 +501,12 @@ async function fillLB(){
     const i=rows.findIndex(r=>r.uid===S.uid);
     if(i>=0){const r=rows[i],up=rows[i-1];h+=`<div class="mine">You are #${r.rk} of ${rows.length}<small>${!up?'You are leading! 🏆':m==='all'?`${Math.max(1,Math.round(up.pts-r.pts)+1)} more pts to reach #${up.rk}`:`${Math.max(.1,r.time-up.time).toFixed(1)}s faster to reach #${up.rk}`}</small></div>`}
     else if(m==='all'&&S.name)h+=`<div class="mine">Earn stars to enter the ranking<small>Finish a level to get points</small></div>`;
-    const rest=rows.slice(3,20);
+    const rest=rows.slice(3,10);
     h+=rest.map(row).join('');
-    if(i>=20)h+=`<div class="mut c">⋯</div>`+row(rows[i]);
+    if(i>=10)h+=`<div class="mut c">⋯</div>`+row(rows[i]);
   }
   el.className='';el.innerHTML=h;
-  $('#lbn').textContent=online?'🌐 Live online ranking':(fbOn()?'📴 Offline · this device only':'📴 Local board');
+  $('#lbn').textContent=online?'🌐 Live online ranking · top 10':(fbOn()?'📴 Not connected · this device only'+(window._fbErr?' ('+window._fbErr+')':''):'📴 Local board');
 }
 function welcome(cb){
   let av=S.av;window.pickAv=a=>{av=a;document.querySelectorAll('#wa button').forEach(b=>b.style.outline=b.dataset.a===a?'3px solid var(--pri)':'')};
